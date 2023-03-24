@@ -13,21 +13,30 @@ public class UIGameMain : MonoBehaviour
     [SerializeField]
     private Image computePawn;
 
-    private static readonly Color PlayerThemeColor = new Color(0.78f, 1, 0.42f, 1);
-    private static readonly Color ComputeThemeColor = new Color(1, 0.23f, 0.23f, 1);
+    [SerializeField] 
+    private Button restartButton;
+
+    [SerializeField] 
+    private Button closeButton;
 
     private void Start()
     {
         TicTacToe.Instance.OnGameStart += OnGameStartEventHandler;
         TicTacToe.Instance.OnPawnPlaced += OnPawnPlacedEventHandler;
         TicTacToe.Instance.OnRoundStart += OnRoundStartEventHandler;
+        TicTacToe.Instance.OnGameOver += OnGameOverEventHandler;
+        
+        restartButton.onClick.AddListener(TicTacToe.Instance.InitChessboard);
     }
 
     private void OnDestroy()
     {
         TicTacToe.Instance.OnGameStart -= OnGameStartEventHandler;
         TicTacToe.Instance.OnPawnPlaced -= OnPawnPlacedEventHandler;
-        TicTacToe.Instance.OnRoundStart += OnRoundStartEventHandler;
+        TicTacToe.Instance.OnRoundStart -= OnRoundStartEventHandler;
+        TicTacToe.Instance.OnGameOver -= OnGameOverEventHandler;
+        
+        restartButton.onClick.RemoveListener(TicTacToe.Instance.InitChessboard);
     }
 
     private void OnPawnPlacedEventHandler()
@@ -44,8 +53,8 @@ public class UIGameMain : MonoBehaviour
     {
         if (isPlayerTurn)
         {
-            playerPawn.color = PlayerThemeColor;
-            playerPawn.transform.GetChild(0).GetComponent<Text>().color = PlayerThemeColor;
+            playerPawn.color = GameConstant.PlayerThemeColor;
+            playerPawn.transform.GetChild(0).GetComponent<Text>().color = GameConstant.PlayerThemeColor;
             computePawn.color = Color.white;
             computePawn.transform.GetChild(0).GetComponent<Text>().color = Color.white;
             
@@ -56,11 +65,22 @@ public class UIGameMain : MonoBehaviour
         {
             playerPawn.color = Color.white;
             playerPawn.transform.GetChild(0).GetComponent<Text>().color = Color.white;
-            computePawn.color = ComputeThemeColor;
-            computePawn.transform.GetChild(0).GetComponent<Text>().color = ComputeThemeColor;
-            
-            // computePawn.transform.localScale = Vector3.one * 1.25f;
-            // computePawn.transform.DOScale(Vector3.one, 0.5f);
+            computePawn.color = GameConstant.ComputeThemeColor;
+            computePawn.transform.GetChild(0).GetComponent<Text>().color = GameConstant.ComputeThemeColor;
         }
+    }
+
+    private void OnGameOverEventHandler(GameResult result)
+    {
+        
+    }
+    
+    private void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

@@ -7,3 +7,15 @@ public enum GameResult
     PlayerWin,
     ComputeWin
 }
+
+/// <summary>
+/// 完成布局
+/// </summary>
+public enum CompletedLayout
+{
+    Incomplete,
+    Diagonal,
+    InvDiagonal,
+    Row,
+    Column
+}

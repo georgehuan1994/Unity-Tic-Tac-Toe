@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,14 +7,23 @@ public class Grid : MonoBehaviour, IPointerClickHandler
 {
     public GridData GridData = null;
 
-    public Transform imageO;
-    public Transform imageX;
+    [SerializeField]
+    private Transform imageO;
+    
+    [SerializeField]
+    private Transform imageX;
 
+    /* Debug Text */
     public Text debugTextConnectedCount;
 
-    public void InitGrid(Vector2Int coord, GridType gridType)
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    /// <param name="coord"></param>
+    /// <param name="gridType"></param>
+    public void Init(Vector2Int coord, GridType gridType)
     {
-        ResetGrid();
+        Reset();
         GridData = new GridData
         {
             Coordinate = coord,
@@ -23,8 +31,12 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         };
     }
 
-    private void ResetGrid()
+    /// <summary>
+    /// 重置
+    /// </summary>
+    private void Reset()
     {
+        GetComponent<Image>().color = GameConstant.GridColor;
         imageO.gameObject.SetActive(false);
         imageX.gameObject.SetActive(false);
         debugTextConnectedCount.gameObject.SetActive(false);
@@ -32,16 +44,43 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         GridData = null;
     }
 
+    /// <summary>
+    /// 显示
+    /// </summary>
     public void ShowGrid()
     {
-        transform.DOScale(Vector3.one, 0.1f).SetEase(Ease.Linear);
+        transform.DOScale(Vector3.one, GameConstant.GridInitShowDuration).SetEase(Ease.Linear);
     }
 
+    /// <summary>
+    /// 平局高亮
+    /// </summary>
+    public void DrawHighlight()
+    {
+        GetComponent<Image>().DOColor(GameConstant.GridDrawColor, GameConstant.GridCompletedHighlightDuration);
+    }
+
+    /// <summary>
+    /// 完成高亮
+    /// </summary>
+    public void CompletedHighlight()
+    {
+        GetComponent<Image>().DOColor(GameConstant.GridHighlightColor, GameConstant.GridCompletedHighlightDuration);
+    }
+
+    /// <summary>
+    /// 点击事件
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnPointerClick(PointerEventData eventData)
     {
         TrySetPlayerPawn();
     }
 
+    /// <summary>
+    /// 尝试放置玩家棋子
+    /// </summary>
+    /// <returns></returns>
     public bool TrySetPlayerPawn()
     {
         if (!TicTacToe.Instance.IsPlayerTurn)
@@ -75,6 +114,10 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         return true;
     }
 
+    /// <summary>
+    /// 尝试放置电脑棋子
+    /// </summary>
+    /// <returns></returns>
     public bool TrySetComputePawn()
     {
         if (TicTacToe.Instance.IsPlayerTurn)
