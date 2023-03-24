@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class TicTacToe : MonoBehaviour
 {
@@ -12,7 +11,10 @@ public class TicTacToe : MonoBehaviour
     /* Inspector Property */
     public Transform chessboard;
     public GameObject gridPrefab;
-    [Range(3, 9)] public int boardSize = 3;
+    [Range(3, 9)]
+    public int boardSize = 3;
+    [Space]
+    public UIGameOver gameOverUI;
 
     /// <summary>
     /// 是否为玩家回合
@@ -51,7 +53,9 @@ public class TicTacToe : MonoBehaviour
 
         _currentStep = 0;
         IsPlayerTurn = true;
-
+        
+        var seq = DOTween.Sequence();
+        
         for (int y = 0; y < boardSize; y++)
         {
             for (int x = 0; x < boardSize; x++)
@@ -59,6 +63,12 @@ public class TicTacToe : MonoBehaviour
                 Grid item = Instantiate(gridPrefab, chessboard).GetComponent<Grid>();
                 item.InitGrid(new Vector2Int(x, y), GridType.Empty);
                 _gridList.Add(item);
+                
+                float timer = 0;
+                DOTween.To(() => timer, a => timer = a, 1f, 0.03f * (x + boardSize * y)).OnComplete(() =>
+                {
+                    item.ShowGrid();
+                });
             }
         }
     }
@@ -281,8 +291,7 @@ public class TicTacToe : MonoBehaviour
             grid.GridData.MaxDiffTypeCountInPipeline = maxDiffTypeCountInPipeline;
         }
     }
-
-
+    
     public void CalculateWeights()
     {
         CalculateConnectedCount();
@@ -418,27 +427,13 @@ public class TicTacToe : MonoBehaviour
         if (_isGameOver) return;
         _isGameOver = true;
         Debug.Log($"WINNER IS: {gameResult}");
+        gameOverUI.Show();
     }
 
-    /// <summary>
-    /// 放置棋子
-    /// </summary>
-    /// <param name="coord"></param>
-    /// <param name="pawnType"></param>
-    public void SetPawn(Vector2Int coord, PawnType pawnType = PawnType.ComputePawn)
+    public void AIMove()
     {
-        var grid = GetGridViaCoord(coord);
-        if (grid)
-        {
-            if (pawnType == PawnType.PlayerPawn)
-            {
-                grid.TrySetPlayerPawn();
-            }
-            else if (pawnType == PawnType.ComputePawn)
-            {
-                grid.TrySetComputePawn();
-            }
-        }
+        CalculateWeights();
+        GetHighestWeightsGrid().TrySetComputePawn();
     }
 
     //////////////////////////////////////////////////////////
@@ -461,7 +456,7 @@ public class TicTacToe : MonoBehaviour
     /// <returns></returns>
     private Grid GetGridViaCoord(int x, int y)
     {
-        int index = x + (int)boardSize * y;
+        int index = x + boardSize * y;
         if (chessboard.childCount <= index)
         {
             Debug.LogWarning(
@@ -482,7 +477,7 @@ public class TicTacToe : MonoBehaviour
 
     private void Start()
     {
-        InitChessboard();
+        Invoke("InitChessboard", 1);
     }
 
     private void Update()
