@@ -29,7 +29,11 @@ public class GridData
     private Vector2Int _coordinate = Vector2Int.zero;
     private GridType _gridType = GridType.Unknown;
     private PawnType _pawnType = PawnType.Unknown;
-    
+    private int _weight = 0;
+    private int _connectedCount = 0;
+    private int _maxSameTypeCountInPipeline = 0;
+    private int _maxDiffTypeCountInPipeline = 0;
+
     public Vector2Int Coordinate
     {
         get => _coordinate;
@@ -46,5 +50,29 @@ public class GridData
     {
         get => _pawnType;
         set => _pawnType = value;
+    }
+
+    public int Weight
+    {
+        get => _weight;
+        set => _weight = value;
+    }
+
+    public int ConnectedCount
+    {
+        get => _connectedCount;
+        set => _connectedCount = value;
+    }
+
+    public int MaxSameTypeCountInPipeline
+    {
+        get => _maxSameTypeCountInPipeline;
+        set => _maxSameTypeCountInPipeline = value;
+    }
+
+    public int MaxDiffTypeCountInPipeline
+    {
+        get => _maxDiffTypeCountInPipeline;
+        set => _maxDiffTypeCountInPipeline = value;
     }
 }

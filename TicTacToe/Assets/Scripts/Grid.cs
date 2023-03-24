@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Grid : MonoBehaviour, IPointerClickHandler
 {
     public GridData GridData = null;
-    
+
     public Transform imageO;
     public Transform imageX;
+
+    public Text debugTextConnectedCount;
 
     public void InitGrid(Vector2Int coord, GridType gridType)
     {
@@ -35,19 +38,20 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         if (!TicTacToe.Instance.IsPlayerTurn)
         {
             // TODO: 非玩家回合
+            return false;
         }
-        
+
         if (GridData.GridType != GridType.Empty)
         {
             Debug.LogWarning($"Grid {GridData.Coordinate} is {GridData.GridType}");
             return false;
         }
-        
+
         GridData.GridType = GridType.Pawn;
         GridData.PawnType = PawnType.PlayerPawn;
-        
+
         imageO.gameObject.SetActive(true);
-        
+
         TicTacToe.Instance.SetLastPlacedGrid(this);
         TicTacToe.Instance.CheckWinner();
         TicTacToe.Instance.IsPlayerTurn = false;
@@ -59,19 +63,20 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         if (TicTacToe.Instance.IsPlayerTurn)
         {
             // TODO: 非电脑回合
+            return false;
         }
-        
+
         if (GridData.GridType != GridType.Empty)
         {
             Debug.LogWarning($"Grid {GridData.Coordinate} is {GridData.GridType}");
             return false;
         }
-        
+
         GridData.GridType = GridType.Pawn;
         GridData.PawnType = PawnType.ComputePawn;
-        
+
         imageX.gameObject.SetActive(true);
-        
+
         TicTacToe.Instance.SetLastPlacedGrid(this);
         TicTacToe.Instance.CheckWinner();
         TicTacToe.Instance.IsPlayerTurn = true;
