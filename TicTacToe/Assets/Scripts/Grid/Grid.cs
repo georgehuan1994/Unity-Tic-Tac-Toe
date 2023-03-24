@@ -46,7 +46,6 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     {
         if (!TicTacToe.Instance.IsPlayerTurn)
         {
-            // TODO: 非玩家回合
             return false;
         }
 
@@ -55,16 +54,18 @@ public class Grid : MonoBehaviour, IPointerClickHandler
             Debug.LogWarning($"Grid {GridData.Coordinate} is {GridData.GridType}");
             return false;
         }
+        
+        imageO.transform.localScale = Vector3.one * 1.25f;
+        imageO.transform.DOScale(Vector3.one, 0.3f);
+        imageO.gameObject.SetActive(true);
 
         GridData.GridType = GridType.Pawn;
         GridData.PawnType = PawnType.PlayerPawn;
 
-        imageO.gameObject.SetActive(true);
-
         TicTacToe.Instance.SetLastPlacedGrid(this);
         TicTacToe.Instance.CheckWinner();
-        TicTacToe.Instance.IsPlayerTurn = false;
-        
+        TicTacToe.Instance.OnPawnPlaced.Invoke();
+
         float timer = 0;
         DOTween.To(() => timer, a => timer = a, 1f, 0.7f).OnComplete(() =>
         {
@@ -78,7 +79,6 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     {
         if (TicTacToe.Instance.IsPlayerTurn)
         {
-            // TODO: 非电脑回合
             return false;
         }
 
@@ -87,15 +87,17 @@ public class Grid : MonoBehaviour, IPointerClickHandler
             Debug.LogWarning($"Grid {GridData.Coordinate} is {GridData.GridType}");
             return false;
         }
+        
+        imageX.transform.localScale = Vector3.one * 1.25f;
+        imageX.transform.DOScale(Vector3.one, 0.3f);
+        imageX.gameObject.SetActive(true);
 
         GridData.GridType = GridType.Pawn;
         GridData.PawnType = PawnType.ComputePawn;
 
-        imageX.gameObject.SetActive(true);
-
         TicTacToe.Instance.SetLastPlacedGrid(this);
         TicTacToe.Instance.CheckWinner();
-        TicTacToe.Instance.IsPlayerTurn = true;
+        TicTacToe.Instance.OnPawnPlaced.Invoke();
         return true;
     }
 

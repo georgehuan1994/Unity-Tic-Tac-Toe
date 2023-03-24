@@ -3,18 +3,44 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-public class TicTacToe : MonoBehaviour
+public partial class TicTacToe : MonoBehaviour
 {
     private static TicTacToe _instance;
     public  static TicTacToe Instance => _instance;
-
-    /* Inspector Property */
-    public Transform chessboard;
-    public GameObject gridPrefab;
+    
+    [SerializeField]
+    private Transform chessboard;
+    
+    [SerializeField]
+    private GameObject gridPrefab;
+    
     [Range(3, 9)]
-    public int boardSize = 3;
-    [Space]
-    public UIGameOver gameOverUI;
+    [SerializeField]
+    private int boardSize = 3;
+
+    /// <summary>
+    /// 对局开始时
+    /// </summary>
+    public delegate void GameStartDelegate();
+    public GameStartDelegate OnGameStart;
+
+    /// <summary>
+    /// 回合开始时
+    /// </summary>
+    public delegate void RoundStartDelegate(bool isPlayerTurn);
+    public RoundStartDelegate OnRoundStart;
+    
+    /// <summary>
+    /// 棋子放置时
+    /// </summary>
+    public delegate void PawnPlacedDelegate();
+    public PawnPlacedDelegate OnPawnPlaced;
+
+    /// <summary>
+    /// 对局结束时
+    /// </summary>
+    public delegate void GameOverDelegate(GameResult gameResult);
+    public GameOverDelegate OnGameOver;
 
     /// <summary>
     /// 是否为玩家回合
@@ -53,15 +79,14 @@ public class TicTacToe : MonoBehaviour
 
         _currentStep = 0;
         IsPlayerTurn = true;
-        
-        var seq = DOTween.Sequence();
-        
+
         for (int y = 0; y < boardSize; y++)
         {
             for (int x = 0; x < boardSize; x++)
             {
                 Grid item = Instantiate(gridPrefab, chessboard).GetComponent<Grid>();
                 item.InitGrid(new Vector2Int(x, y), GridType.Empty);
+                
                 _gridList.Add(item);
                 
                 float timer = 0;
@@ -71,6 +96,9 @@ public class TicTacToe : MonoBehaviour
                 });
             }
         }
+        
+        OnGameStart.Invoke();
+        OnRoundStart.Invoke(IsPlayerTurn);
     }
 
     /// <summary>
@@ -345,6 +373,12 @@ public class TicTacToe : MonoBehaviour
         CheckRow();
         CheckColumn();
         CheckDraw();
+
+        if (!_isGameOver)
+        {
+            IsPlayerTurn = !IsPlayerTurn;
+            OnRoundStart.Invoke(IsPlayerTurn);
+        }
     }
 
     /// <summary>
@@ -424,14 +458,18 @@ public class TicTacToe : MonoBehaviour
     /// <param name="gameResult"></param>
     private void GameOver(GameResult gameResult)
     {
-        if (_isGameOver) return;
+        if (_isGameOver)
+        {
+            return;
+        }
         _isGameOver = true;
+        OnGameOver.Invoke(gameResult);
         Debug.Log($"WINNER IS: {gameResult}");
-        gameOverUI.Show();
     }
 
     public void AIMove()
     {
+        if (_isGameOver) return;
         CalculateWeights();
         GetHighestWeightsGrid().TrySetComputePawn();
     }
