@@ -35,10 +35,10 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
     {
         switch (gameResult)
         {
-            case GameResult.Draw:
+            case GameResult.Tie:
                 playerPawn.gameObject.SetActive(true);
                 computePawn.gameObject.SetActive(true);
-                resultText.text = "Draw";
+                resultText.text = "TIE";
                 break;
             case GameResult.PlayerWin:
                 playerPawn.gameObject.SetActive(true);

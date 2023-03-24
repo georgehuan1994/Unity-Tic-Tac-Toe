@@ -55,9 +55,9 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     /// <summary>
     /// 平局高亮
     /// </summary>
-    public void DrawHighlight()
+    public void TiesHighlight()
     {
-        GetComponent<Image>().DOColor(GameConstant.GridDrawColor, GameConstant.GridCompletedHighlightDuration);
+        GetComponent<Image>().DOColor(GameConstant.GridTiesColor, GameConstant.GridCompletedHighlightDuration);
     }
 
     /// <summary>
@@ -101,8 +101,8 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         GridData.GridType = GridType.Pawn;
         GridData.PawnType = PawnType.PlayerPawn;
 
-        TicTacToe.Instance.SetLastPlacedGrid(this);
-        TicTacToe.Instance.CheckWinner();
+        TicTacToe.Instance.LastPlacedGrid = this;
+        TicTacToe.Instance.CheckWinnerForInput(GridData.Coordinate, GridData.PawnType);
         TicTacToe.Instance.OnPawnPlaced.Invoke();
 
         float timer = 0;
@@ -138,8 +138,8 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         GridData.GridType = GridType.Pawn;
         GridData.PawnType = PawnType.ComputePawn;
 
-        TicTacToe.Instance.SetLastPlacedGrid(this);
-        TicTacToe.Instance.CheckWinner();
+        TicTacToe.Instance.LastPlacedGrid = this;
+        TicTacToe.Instance.CheckWinnerForInput(GridData.Coordinate, GridData.PawnType);
         TicTacToe.Instance.OnPawnPlaced.Invoke();
         return true;
     }

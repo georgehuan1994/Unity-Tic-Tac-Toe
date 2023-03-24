@@ -3,9 +3,10 @@
 /// </summary>
 public enum GameResult
 {
-    Draw,
-    PlayerWin,
-    ComputeWin
+    Tie = 0,
+    PlayerWin = -1,
+    ComputeWin = 1,
+    Continue = 999,
 }
 
 /// <summary>
@@ -13,7 +14,7 @@ public enum GameResult
 /// </summary>
 public enum CompletedLayout
 {
-    Incomplete,
+    Full,
     Diagonal,
     InvDiagonal,
     Row,

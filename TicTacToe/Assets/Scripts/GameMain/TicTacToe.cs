@@ -57,19 +57,29 @@ public partial class TicTacToe : MonoBehaviour
     private bool _isGameOver = false;
 
     /// <summary>
-    /// 最后一个被放置的格子
+    /// 最后一个被放置的 Grid
     /// </summary>
-    private static Grid _lastPlacedGrid = null;
+    public Grid LastPlacedGrid
+    {
+        get => _lastPlacedGrid;
+        set
+        {
+            _lastPlacedGrid = value;
+            _currentStep++;
+        }
+    }
+    
+    private static Grid _lastPlacedGrid;
 
     /// <summary>
-    /// 格子列表
+    /// Grid 数组
     /// </summary>
-    private static List<Grid> _gridList = new List<Grid>();
+    private static Grid[,] _grids;
 
     /// <summary>
     /// 完成列表
     /// </summary>
-    public static List<Grid> CompletedGrids = new List<Grid>();
+    private static List<Grid> _completedGrids = new List<Grid>();
 
     /// <summary>
     /// 初始化棋盘
@@ -79,8 +89,9 @@ public partial class TicTacToe : MonoBehaviour
         ClearChessboard();
 
         _isGameOver = false;
-        _gridList = new List<Grid>();
-        CompletedGrids = new List<Grid>();
+        _boardData = new PawnType[boardSize, boardSize];
+        _grids = new Grid[boardSize, boardSize];
+        _completedGrids = new List<Grid>();
 
         _currentStep = 0;
         IsPlayerTurn = true;
@@ -92,7 +103,7 @@ public partial class TicTacToe : MonoBehaviour
                 Grid item = Instantiate(gridPrefab, chessboard).GetComponent<Grid>();
                 item.Init(new Vector2Int(x, y), GridType.Empty);
                 
-                _gridList.Add(item);
+                _grids[x, y] = item;
                 
                 float timer = 0;
                 DOTween.To(() => timer, a => timer = a, 1f, 
@@ -112,7 +123,8 @@ public partial class TicTacToe : MonoBehaviour
     /// </summary>
     private void ClearChessboard()
     {
-        _gridList = null;
+        _boardData = new PawnType[boardSize, boardSize];
+        _grids = new Grid[boardSize, boardSize];
 
         foreach (Transform child in chessboard)
         {
@@ -122,100 +134,22 @@ public partial class TicTacToe : MonoBehaviour
 
     //////////////////////////////////////////////////////////
 
-    public void SetLastPlacedGrid(Grid grid)
-    {
-        _lastPlacedGrid = grid;
-        _currentStep++;
-    }
-
     /// <summary>
-    /// 检查获胜者
+    /// AI 操作
     /// </summary>
-    public void CheckWinner()
+    public void AIMove()
     {
-        CheckDiagonal();
-        CheckInvDiagonal();
-        CheckRow();
-        CheckColumn();
-        CheckDraw();
-
-        if (!_isGameOver)
-        {
-            IsPlayerTurn = !IsPlayerTurn;
-            OnRoundStart.Invoke(IsPlayerTurn);
-        }
+        if (_isGameOver) return;
+        
+        /* Weights */
+        CalculateWeights();
+        GetHighestWeightsGrid().TrySetComputePawn();
+        
+        /* Minimax */
+        // GetBestGrid().TrySetComputePawn();
     }
 
-    /// <summary>
-    /// 检查对角线
-    /// </summary>
-    private void CheckDiagonal()
-    {
-        if (_lastPlacedGrid.GridData.Coordinate.x == _lastPlacedGrid.GridData.Coordinate.y)
-        {
-            for (int i = 0; i < boardSize; i++)
-            {
-                if (_lastPlacedGrid.GridData.PawnType != _gridList[i * (boardSize + 1)].GridData.PawnType) return;
-            }
-            
-            GameOver(IsPlayerTurn ? GameResult.PlayerWin : GameResult.ComputeWin, CompletedLayout.Diagonal);
-        }
-    }
-
-    /// <summary>
-    /// 检查逆对角线
-    /// </summary>
-    private void CheckInvDiagonal()
-    {
-        if (_lastPlacedGrid.GridData.Coordinate.x + _lastPlacedGrid.GridData.Coordinate.y == boardSize - 1)
-        {
-            for (int i = 0; i < boardSize; i++)
-            {
-                if (_lastPlacedGrid.GridData.PawnType != _gridList[(i + 1) * (boardSize - 1)].GridData.PawnType) return;
-            }
-
-            GameOver(IsPlayerTurn ? GameResult.PlayerWin : GameResult.ComputeWin, CompletedLayout.InvDiagonal);
-        }
-    }
-
-    /// <summary>
-    /// 检查当前列
-    /// </summary>
-    private void CheckRow()
-    {
-        int x = _lastPlacedGrid.GridData.Coordinate.x;
-        for (int i = 0; i < boardSize; i++)
-        {
-            if (_lastPlacedGrid.GridData.PawnType != _gridList[boardSize * i + x].GridData.PawnType) return;
-        }
-
-        GameOver(IsPlayerTurn ? GameResult.PlayerWin : GameResult.ComputeWin, CompletedLayout.Row);
-    }
-
-    /// <summary>
-    /// 检查当前行
-    /// </summary>
-    private void CheckColumn()
-    {
-        int y = _lastPlacedGrid.GridData.Coordinate.y;
-        for (int i = 0; i < boardSize; i++)
-        {
-            if (_lastPlacedGrid.GridData.PawnType != _gridList[boardSize * y + i].GridData.PawnType) return;
-        }
-
-        GameOver(IsPlayerTurn ? GameResult.PlayerWin : GameResult.ComputeWin, CompletedLayout.Column);
-    }
-
-    /// <summary>
-    /// 检查和棋
-    /// </summary>
-    private void CheckDraw()
-    {
-        if (_currentStep >= boardSize * boardSize)
-        {
-            GameOver(GameResult.Draw, CompletedLayout.Incomplete);
-        }
-    }
+    //////////////////////////////////////////////////////////
 
     /// <summary>
     /// 结束游戏
@@ -223,90 +157,57 @@ public partial class TicTacToe : MonoBehaviour
     /// <param name="gameResult"></param>
     private void GameOver(GameResult gameResult, CompletedLayout completedLayout)
     {
+        if (gameResult == GameResult.Continue)
+        {
+            return;
+        }
+        
         if (_isGameOver)
         {
             return;
         }
         _isGameOver = true;
 
-        CompletedGrids = new List<Grid>();
+        _completedGrids = new List<Grid>();
         for (int i = 0; i < boardSize; i++)
         {
+            if (completedLayout == CompletedLayout.Full)
+            {
+                foreach (Grid grid in _grids)
+                {
+                    grid.TiesHighlight();
+                }
+                break;
+            }
+            
             switch (completedLayout)
             {
-                case CompletedLayout.Incomplete:
-                    CompletedGrids = _gridList;
-                    break;
                 case CompletedLayout.Diagonal:
-                    CompletedGrids.Add(_gridList[i * (boardSize + 1)]);
+                    _completedGrids.Add(_grids[i, i]);
                     break;
                 case CompletedLayout.InvDiagonal:
-                    CompletedGrids.Add(_gridList[(i + 1) * (boardSize - 1)]);
+                    _completedGrids.Add(_grids[i, boardSize - i - 1]);
                     break;
                 case CompletedLayout.Row:
-                    CompletedGrids.Add(_gridList[boardSize * i + _lastPlacedGrid.GridData.Coordinate.x]);
+                    _completedGrids.Add(_grids[LastPlacedGrid.GridData.Coordinate.x, i]);
                     break;
                 case CompletedLayout.Column:
-                    CompletedGrids.Add(_gridList[boardSize * _lastPlacedGrid.GridData.Coordinate.y + i]);
+                    _completedGrids.Add(_grids[i, LastPlacedGrid.GridData.Coordinate.y]);
                     break;
             }
         }
-
-        foreach (Grid grid in CompletedGrids)
+        
+        foreach (Grid grid in _completedGrids)
         {
-            if (completedLayout == CompletedLayout.Incomplete)
-            {
-                grid.DrawHighlight();
-            }
-            else
-            {
-                grid.CompletedHighlight();
-            }
+            grid.CompletedHighlight();
         }
 
         OnGameOver.Invoke(gameResult);
         Debug.Log($"WINNER IS: {gameResult}");
     }
 
-    public void AIMove()
-    {
-        if (_isGameOver) return;
-        CalculateWeights();
-        GetHighestWeightsGrid().TrySetComputePawn();
-    }
-
     //////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// 获取格子
-    /// </summary>
-    /// <param name="coord"></param>
-    /// <returns></returns>
-    private Grid GetGridViaCoord(Vector2Int coord)
-    {
-        return GetGridViaCoord(coord.x, coord.y);
-    }
-
-    /// <summary>
-    /// 获取格子
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
-    private Grid GetGridViaCoord(int x, int y)
-    {
-        int index = x + boardSize * y;
-        if (chessboard.childCount <= index)
-        {
-            Debug.LogWarning(
-                $"Can not find Grid-({x}, {y}) which Index-{index}, current chessboard grid length-{chessboard.childCount}");
-            return null;
-        }
-
-        return chessboard.GetChild(index).GetComponent<Grid>();
-    }
-
-    //////////////////////////////////////////////////////////
+    
 
     private void Awake()
     {

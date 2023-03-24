@@ -1,12 +1,9 @@
-using System.Linq;
-
 public partial class TicTacToe
 {
     private void CalculateConnectedCount()
     {
-        for (int i = 0; i < _gridList.Count; i++)
+        foreach (Grid grid in _grids)
         {
-            var grid = _gridList[i];
             int connectedCount = 0;
 
             if (grid.GridData.GridType == GridType.Empty)
@@ -28,10 +25,10 @@ public partial class TicTacToe
                 // 对角线是否连通？
                 if (x == y)
                 {
-                    for (int l = 0; l < boardSize; l++)
+                    for (int i = 0; i < boardSize; i++)
                     {
-                        if (!(_gridList[l * (boardSize + 1)].GridData.GridType == GridType.Empty ||
-                              _gridList[l * (boardSize + 1)].GridData.PawnType == grid.GridData.PawnType))
+                        if (!(_grids[i, i].GridData.GridType == GridType.Empty ||
+                              _grids[i, i].GridData.PawnType == grid.GridData.PawnType))
                         {
                             connectedCount--;
                             break;
@@ -42,10 +39,10 @@ public partial class TicTacToe
                 // 逆对角线是否连通？
                 if (x + y == boardSize - 1)
                 {
-                    for (int n = 0; n < boardSize; n++)
+                    for (int j = 0; j < boardSize; j++)
                     {
-                        if (!(_gridList[(n + 1) * (boardSize - 1)].GridData.GridType == GridType.Empty ||
-                              _gridList[(n + 1) * (boardSize - 1)].GridData.PawnType == grid.GridData.PawnType))
+                        if (!(_grids[j, boardSize - j - 1].GridData.GridType == GridType.Empty ||
+                              _grids[j, boardSize - j - 1].GridData.PawnType == grid.GridData.PawnType))
                         {
                             connectedCount--;
                             break;
@@ -54,10 +51,10 @@ public partial class TicTacToe
                 }
 
                 // 列是否连通？
-                for (int j = 0; j < boardSize; j++)
+                for (int k = 0; k < boardSize; k++)
                 {
-                    if (!(_gridList[boardSize * j + x].GridData.GridType == GridType.Empty ||
-                          _gridList[boardSize * j + x].GridData.PawnType == grid.GridData.PawnType))
+                    if (!(_grids[x, k].GridData.GridType == GridType.Empty ||
+                          _grids[x, k].GridData.PawnType == grid.GridData.PawnType))
                     {
                         connectedCount--;
                         break;
@@ -65,10 +62,10 @@ public partial class TicTacToe
                 }
 
                 // 行是否连通？
-                for (int k = 0; k < boardSize; k++)
+                for (int l = 0; l < boardSize; l++)
                 {
-                    if (!(_gridList[boardSize * y + k].GridData.GridType == GridType.Empty ||
-                          _gridList[boardSize * y + k].GridData.PawnType == grid.GridData.PawnType))
+                    if (!(_grids[l, y].GridData.GridType == GridType.Empty ||
+                          _grids[l, y].GridData.PawnType == grid.GridData.PawnType))
                     {
                         connectedCount--;
                         break;
@@ -82,10 +79,8 @@ public partial class TicTacToe
 
     private void CalculateMaxSameTypeCount()
     {
-        for (int i = 0; i < _gridList.Count; i++)
+        foreach (Grid grid in _grids)
         {
-            var grid = _gridList[i];
-
             int maxSameTypeCountInPipeline = 0;
             int maxDiffTypeCountInPipeline = 0;
 
@@ -100,9 +95,9 @@ public partial class TicTacToe
                 // 对角线
                 if (x == y)
                 {
-                    for (int j = 0; j < boardSize; j++)
+                    for (int i = 0; i < boardSize; i++)
                     {
-                        if (_gridList[j * (boardSize + 1)].GridData.PawnType == PawnType.ComputePawn)
+                        if (_grids[i, i].GridData.PawnType == PawnType.ComputePawn)
                         {
                             maxSameTypeCount++;
                             if (maxSameTypeCountInPipeline < maxSameTypeCount)
@@ -111,7 +106,7 @@ public partial class TicTacToe
                             }
                         }
 
-                        if (_gridList[j * (boardSize + 1)].GridData.PawnType == PawnType.PlayerPawn)
+                        if (_grids[i, i].GridData.PawnType == PawnType.PlayerPawn)
                         {
                             maxDiffTypeCount++;
                             if (maxDiffTypeCountInPipeline < maxDiffTypeCount)
@@ -128,9 +123,9 @@ public partial class TicTacToe
                 // 逆对角线
                 if (x + y == boardSize - 1)
                 {
-                    for (int k = 0; k < boardSize; k++)
+                    for (int j = 0; j < boardSize; j++)
                     {
-                        if (_gridList[(k + 1) * (boardSize - 1)].GridData.PawnType == PawnType.ComputePawn)
+                        if (_grids[j, boardSize - j - 1].GridData.PawnType == PawnType.ComputePawn)
                         {
                             maxSameTypeCount++;
                             if (maxSameTypeCountInPipeline < maxSameTypeCount)
@@ -139,7 +134,7 @@ public partial class TicTacToe
                             }
                         }
 
-                        if (_gridList[(k + 1) * (boardSize - 1)].GridData.PawnType == PawnType.PlayerPawn)
+                        if (_grids[j, boardSize - j - 1].GridData.PawnType == PawnType.PlayerPawn)
                         {
                             maxDiffTypeCount++;
                             if (maxDiffTypeCountInPipeline < maxDiffTypeCount)
@@ -154,9 +149,9 @@ public partial class TicTacToe
                 maxDiffTypeCount = 0;
 
                 // 列
-                for (int l = 0; l < boardSize; l++)
+                for (int k = 0; k < boardSize; k++)
                 {
-                    if (_gridList[boardSize * l + x].GridData.PawnType == PawnType.ComputePawn)
+                    if (_grids[x, k].GridData.PawnType == PawnType.ComputePawn)
                     {
                         maxSameTypeCount++;
                         if (maxSameTypeCountInPipeline < maxSameTypeCount)
@@ -165,7 +160,7 @@ public partial class TicTacToe
                         }
                     }
 
-                    if (_gridList[boardSize * l + x].GridData.PawnType == PawnType.PlayerPawn)
+                    if (_grids[x, k].GridData.PawnType == PawnType.PlayerPawn)
                     {
                         maxDiffTypeCount++;
                         if (maxDiffTypeCountInPipeline < maxDiffTypeCount)
@@ -179,9 +174,9 @@ public partial class TicTacToe
                 maxDiffTypeCount = 0;
 
                 // 行
-                for (int m = 0; m < boardSize; m++)
+                for (int l = 0; l < boardSize; l++)
                 {
-                    if (_gridList[boardSize * y + m].GridData.PawnType == PawnType.ComputePawn)
+                    if (_grids[l, y].GridData.PawnType == PawnType.ComputePawn)
                     {
                         maxSameTypeCount++;
                         if (maxSameTypeCountInPipeline < maxSameTypeCount)
@@ -190,7 +185,7 @@ public partial class TicTacToe
                         }
                     }
 
-                    if (_gridList[boardSize * y + m].GridData.PawnType == PawnType.PlayerPawn)
+                    if (_grids[l, y].GridData.PawnType == PawnType.PlayerPawn)
                     {
                         maxDiffTypeCount++;
                         if (maxDiffTypeCountInPipeline < maxDiffTypeCount)
@@ -211,7 +206,7 @@ public partial class TicTacToe
         CalculateConnectedCount();
         CalculateMaxSameTypeCount();
 
-        foreach (var grid in _gridList)
+        foreach (var grid in _grids)
         {
             int maxSameTypeFactory = boardSize - 1;
             int maxDiffTypeFactory = boardSize;
@@ -239,6 +234,21 @@ public partial class TicTacToe
 
     private Grid GetHighestWeightsGrid()
     {
-        return _gridList.OrderByDescending(x => x.GridData.Weight).FirstOrDefault();
+        int maxVal = int.MinValue;
+        Grid maxWeightGrid = null;
+
+        for (int i = 0; i < _grids.GetLength(0); i++)
+        {
+            for (int j = 0; j < _grids.GetLength(1); j++)
+            {
+                if (_grids[i, j].GridData.Weight > maxVal)
+                {
+                    maxVal = _grids[i, j].GridData.Weight;
+                    maxWeightGrid = _grids[i, j];
+                }
+            }
+        }
+
+        return maxWeightGrid;
     }
 }
