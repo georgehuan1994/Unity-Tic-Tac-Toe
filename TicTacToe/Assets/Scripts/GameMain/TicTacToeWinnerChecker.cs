@@ -3,32 +3,25 @@ using UnityEngine;
 public partial class TicTacToe
 {
     /// <summary>
-    /// 检查获胜者
+    /// 对局结束检查
     /// </summary>
-    public void CheckWinnerForInput(Vector2Int coord, PawnType pawnType)
+    private void GameOverCheck(Vector2Int coord, PawnType pawnType)
     {
         _boardData[coord.x, coord.y] = pawnType;
-
         GameOver(CheckDiagonal(coord, pawnType), CompletedLayout.Diagonal);
         GameOver(CheckInvDiagonal(coord, pawnType), CompletedLayout.InvDiagonal);
         GameOver(CheckRow(coord, pawnType), CompletedLayout.Row);
         GameOver(CheckColumn(coord, pawnType), CompletedLayout.Column);
         GameOver(CheckTie(), CompletedLayout.Full);
-
-        if (!_isGameOver)
-        {
-            IsPlayerTurn = !IsPlayerTurn;
-            OnRoundStart.Invoke(IsPlayerTurn);
-        }
     }
 
     /// <summary>
-    /// 
+    /// 胜平负检查
     /// </summary>
     /// <param name="coord"></param>
     /// <param name="pawnType"></param>
     /// <returns></returns>
-    private int CheckWinner(Vector2Int coord, PawnType pawnType)
+    private int WinnerCheck(Vector2Int coord, PawnType pawnType)
     {
         var result = CheckDiagonal(coord, pawnType);
         if (result != GameResult.Continue) return (int)result;
@@ -44,6 +37,8 @@ public partial class TicTacToe
         
         return (int)CheckTie();
     }
+    
+    //////////////////////////////////////////////////////////
 
     /// <summary>
     /// 检查对角线

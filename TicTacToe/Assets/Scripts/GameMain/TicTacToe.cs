@@ -62,8 +62,13 @@ public partial class TicTacToe : MonoBehaviour
             _lastPlacedGrid = value;
             if (value != null)
             {
-                CheckWinnerForInput(value.GridData.Coordinate, value.GridData.PawnType);
+                GameOverCheck(value.GridData.Coordinate, value.GridData.PawnType);
                 OnPawnPlaced.Invoke();
+                if (!_isGameOver)
+                {
+                    IsPlayerTurn = !IsPlayerTurn;
+                    OnRoundStart.Invoke(IsPlayerTurn);
+                }
             }
         }
     }

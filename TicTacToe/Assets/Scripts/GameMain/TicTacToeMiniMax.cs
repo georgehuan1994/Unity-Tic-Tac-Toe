@@ -2,8 +2,11 @@ using UnityEngine;
 
 public partial class TicTacToe
 {
-    
-
+    /// <summary>
+    /// 获取最佳落子位置
+    /// </summary>
+    /// <param name="pawnType"></param>
+    /// <returns></returns>
     private Grid GetBestMove(PawnType pawnType)
     {
         var bestScore = int.MinValue;
@@ -33,7 +36,7 @@ public partial class TicTacToe
 
     private int Minimax(Vector2Int coord, PawnType pawnType, int depth, bool isMaximizingNext)
     {
-        var result = CheckWinner(coord, pawnType);
+        var result = WinnerCheck(coord, pawnType);
         if (result != (int)GameResult.Continue)
         {
             return result;
