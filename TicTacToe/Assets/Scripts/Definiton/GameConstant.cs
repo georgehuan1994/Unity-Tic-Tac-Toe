@@ -15,4 +15,10 @@ public static class GameConstant
     public const float GridCompletedHighlightDuration = 0.2f;
 
     public const float RestartButtonShowDelay = 5f;
+
+    public const float GridCellSize3X3 = 280f;
+    public const float GridCellSize4X4 = 210f;
+
+    public const float GridCellSpacing3X3 = 36f;
+    public const float GridCellSpacing4X4 = 27f;
 }

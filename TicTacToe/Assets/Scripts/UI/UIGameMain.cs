@@ -27,6 +27,7 @@ public class UIGameMain : MonoBehaviour
         TicTacToe.Instance.OnGameOver += OnGameOverEventHandler;
         
         restartButton.onClick.AddListener(TicTacToe.Instance.InitChessboard);
+        closeButton.onClick.AddListener(QuitGame);
     }
 
     private void OnDestroy()
@@ -37,6 +38,7 @@ public class UIGameMain : MonoBehaviour
         TicTacToe.Instance.OnGameOver -= OnGameOverEventHandler;
         
         restartButton.onClick.RemoveListener(TicTacToe.Instance.InitChessboard);
+        closeButton.onClick.RemoveListener(QuitGame);
     }
 
     private void OnPawnPlacedEventHandler()
@@ -47,6 +49,18 @@ public class UIGameMain : MonoBehaviour
     private void OnGameStartEventHandler()
     {
         startTipsText.gameObject.SetActive(true);
+        
+        var layoutGroup = transform.Find("Panel_Chessboard").GetComponent<GridLayoutGroup>();
+        if (TicTacToe.Instance.boardSize == 3)
+        {
+            layoutGroup.cellSize = Vector2.one * GameConstant.GridCellSize3X3;
+            layoutGroup.spacing = Vector2.one * GameConstant.GridCellSpacing3X3;
+        }
+        if (TicTacToe.Instance.boardSize == 4)
+        {
+            layoutGroup.cellSize = Vector2.one * GameConstant.GridCellSize4X4;
+            layoutGroup.spacing = Vector2.one * GameConstant.GridCellSpacing4X4;
+        }
     }
 
     private void OnRoundStartEventHandler(bool isPlayerTurn)

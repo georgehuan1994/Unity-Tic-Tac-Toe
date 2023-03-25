@@ -13,9 +13,9 @@ public partial class TicTacToe : MonoBehaviour
     [SerializeField]
     private GameObject gridPrefab;
     
-    [Range(3, 9)]
+    [Range(3, 4)]
     [SerializeField]
-    private int boardSize = 3;
+    public int boardSize = 3;
 
     /// <summary>
     /// 对局开始时

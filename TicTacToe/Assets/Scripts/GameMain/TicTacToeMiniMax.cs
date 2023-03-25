@@ -34,7 +34,7 @@ public partial class TicTacToe
         return _grids[bestMove.x, bestMove.y];
     }
 
-    private int Minimax(Vector2Int coord, PawnType pawnType, int depth, bool isMaximizingNext)
+    private int Minimax(Vector2Int coord, PawnType pawnType, int depth, bool isMaximizingNext, int alpha = int.MinValue, int beta = int.MaxValue)
     {
         var result = WinnerCheck(coord, pawnType);
         if (result != (int)GameResult.Continue)
@@ -53,9 +53,15 @@ public partial class TicTacToe
                     if (_boardData[x,y] == PawnType.None)
                     {
                         _boardData[x, y] = PawnType.ComputePawn;
-                        var score = Minimax(new Vector2Int(x, y), PawnType.ComputePawn, depth + 1, false);
+                        var score = Minimax(new Vector2Int(x, y), PawnType.ComputePawn, depth + 1, false, alpha, beta);
                         _boardData[x, y] = PawnType.None;
                         bestScore = Mathf.Max(score, bestScore);
+                        
+                        alpha = Mathf.Max(alpha, score);
+                        if (beta <= alpha)
+                        {
+                            return bestScore;
+                        }
                     }
                 }
             }
@@ -72,9 +78,15 @@ public partial class TicTacToe
                     if (_boardData[x,y] == PawnType.None)
                     {
                         _boardData[x, y] = PawnType.PlayerPawn;
-                        var score = Minimax(new Vector2Int(x, y), PawnType.PlayerPawn, depth + 1, true);
+                        var score = Minimax(new Vector2Int(x, y), PawnType.PlayerPawn, depth + 1, true, alpha, beta);
                         _boardData[x, y] = PawnType.None;
                         bestScore = Mathf.Min(score, bestScore);
+
+                        beta = Mathf.Min(beta, score);
+                        if (beta <= alpha)
+                        {
+                            return bestScore;
+                        }
                     }
                 }
             }
