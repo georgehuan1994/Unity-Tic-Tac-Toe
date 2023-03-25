@@ -2,13 +2,10 @@ using UnityEngine;
 
 public partial class TicTacToe
 {
-    private static PawnType[,] _boardData;
     
-    private Vector2Int _bestMove = Vector2Int.zero;
 
-    private void BestMove()
+    private Grid GetBestMove(PawnType pawnType)
     {
-        // AI: Max Value
         var bestScore = int.MinValue;
         var bestMove = Vector2Int.zero;
         
@@ -16,56 +13,69 @@ public partial class TicTacToe
         {
             for (int x = 0; x < boardSize; x++)
             {
-                if (_boardData[x,y] == PawnType.Unknown)
+                if (_boardData[x,y] == PawnType.None)
                 {
-                    _boardData[x, y] = PawnType.ComputePawn;
-                    var score = Minimax(new Vector2Int(x, y), _boardData[x, y], 0, false);
-                    _boardData[x, y] = PawnType.Unknown;
+                    _boardData[x, y] = pawnType;
+                    var score = Minimax(new Vector2Int(x, y), pawnType, 0, pawnType == PawnType.PlayerPawn);
+                    _boardData[x, y] = PawnType.None;
+
                     if (score > bestScore)
                     {
                         bestScore = score;
-                        _bestMove = bestMove = new Vector2Int(x, y);
+                        bestMove = new Vector2Int(x, y);
                     }
                 }
             }
         }
-
-        _boardData[bestMove.x, bestMove.y] = PawnType.ComputePawn;
         
-        // Turn
+        return _grids[bestMove.x, bestMove.y];
     }
 
     private int Minimax(Vector2Int coord, PawnType pawnType, int depth, bool isMaximizingNext)
     {
-        var score = CheckWinner(coord, pawnType);
-        if (score < 999)
+        var result = CheckWinner(coord, pawnType);
+        if (result != (int)GameResult.Continue)
         {
-            return score;
+            return result;
         }
         
-        if (isMaximizingNext)
+        if (isMaximizingNext) // AI
         {
+            var bestScore = int.MinValue;
+
             for (int y = 0; y < boardSize; y++)
             {
                 for (int x = 0; x < boardSize; x++)
                 {
-                    
+                    if (_boardData[x,y] == PawnType.None)
+                    {
+                        _boardData[x, y] = PawnType.ComputePawn;
+                        var score = Minimax(new Vector2Int(x, y), PawnType.ComputePawn, depth + 1, false);
+                        _boardData[x, y] = PawnType.None;
+                        bestScore = Mathf.Max(score, bestScore);
+                    }
                 }
             }
+            return bestScore;
         }
-        return 1;
-    }
+        else // Player
+        {
+            var bestScore = int.MaxValue;
 
-    
-
-    private Grid GetBestGrid()
-    {
-        BestMove();
-        return _grids[_bestMove.x, _bestMove.y];
-    }
-    
-    public void SetBoardDate(Vector2Int coord, PawnType pawnType)
-    {
-        _boardData[coord.x, coord.y] = pawnType;
+            for (int y = 0; y < boardSize; y++)
+            {
+                for (int x = 0; x < boardSize; x++)
+                {
+                    if (_boardData[x,y] == PawnType.None)
+                    {
+                        _boardData[x, y] = PawnType.PlayerPawn;
+                        var score = Minimax(new Vector2Int(x, y), PawnType.PlayerPawn, depth + 1, true);
+                        _boardData[x, y] = PawnType.None;
+                        bestScore = Mathf.Min(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        }
     }
 }

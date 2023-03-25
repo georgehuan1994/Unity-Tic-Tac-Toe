@@ -7,7 +7,9 @@ public partial class TicTacToe
     /// </summary>
     public void CheckWinnerForInput(Vector2Int coord, PawnType pawnType)
     {
-        GameOver(CheckDiagonal(coord, pawnType),CompletedLayout.Diagonal);
+        _boardData[coord.x, coord.y] = pawnType;
+
+        GameOver(CheckDiagonal(coord, pawnType), CompletedLayout.Diagonal);
         GameOver(CheckInvDiagonal(coord, pawnType), CompletedLayout.InvDiagonal);
         GameOver(CheckRow(coord, pawnType), CompletedLayout.Row);
         GameOver(CheckColumn(coord, pawnType), CompletedLayout.Column);
@@ -20,11 +22,15 @@ public partial class TicTacToe
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="coord"></param>
+    /// <param name="pawnType"></param>
+    /// <returns></returns>
     private int CheckWinner(Vector2Int coord, PawnType pawnType)
     {
-        GameResult result = GameResult.Continue;
-
-        result = CheckDiagonal(coord, pawnType);
+        var result = CheckDiagonal(coord, pawnType);
         if (result != GameResult.Continue) return (int)result;
 
         result = CheckInvDiagonal(coord, pawnType);
@@ -48,7 +54,7 @@ public partial class TicTacToe
         {
             for (int i = 0; i < boardSize; i++)
             {
-                if (pawnType != _grids[i, i].GridData.PawnType) return GameResult.Continue;
+                if (pawnType != _boardData[i, i]) return GameResult.Continue;
             }
 
             return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -66,7 +72,7 @@ public partial class TicTacToe
         {
             for (int i = 0; i < boardSize; i++)
             {
-                if (pawnType != _grids[i, boardSize - i - 1].GridData.PawnType) return GameResult.Continue;
+                if (pawnType != _boardData[i, boardSize - i - 1]) return GameResult.Continue;
             }
             
             return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -82,7 +88,7 @@ public partial class TicTacToe
     {
         for (int i = 0; i < boardSize; i++)
         {
-            if (pawnType != _grids[coord.x, i].GridData.PawnType) return GameResult.Continue;
+            if (pawnType != _boardData[coord.x, i]) return GameResult.Continue;
         }
 
         return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -95,7 +101,7 @@ public partial class TicTacToe
     {
         for (int i = 0; i < boardSize; i++)
         {
-            if (pawnType != _grids[i, coord.y].GridData.PawnType) return GameResult.Continue;
+            if (pawnType != _boardData[i, coord.y]) return GameResult.Continue;
         }
 
         return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -106,11 +112,13 @@ public partial class TicTacToe
     /// </summary>
     private GameResult CheckTie()
     {
-        if (_currentStep >= boardSize * boardSize)
+        foreach (var pawnType in _boardData)
         {
-            return GameResult.Tie;
+            if (pawnType == PawnType.None)
+            {
+                return GameResult.Continue;
+            }
         }
-
-        return GameResult.Continue;
+        return GameResult.Tie;
     }
 }

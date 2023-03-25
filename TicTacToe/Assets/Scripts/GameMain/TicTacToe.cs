@@ -47,14 +47,9 @@ public partial class TicTacToe : MonoBehaviour
     public bool IsPlayerTurn { get; set; }
 
     /// <summary>
-    /// 当前步数
-    /// </summary>
-    private uint _currentStep = 0;
-
-    /// <summary>
     /// 游戏结束标识
     /// </summary>
-    private bool _isGameOver = false;
+    private bool _isGameOver;
 
     /// <summary>
     /// 最后一个被放置的 Grid
@@ -65,7 +60,11 @@ public partial class TicTacToe : MonoBehaviour
         set
         {
             _lastPlacedGrid = value;
-            _currentStep++;
+            if (value != null)
+            {
+                CheckWinnerForInput(value.GridData.Coordinate, value.GridData.PawnType);
+                OnPawnPlaced.Invoke();
+            }
         }
     }
     
@@ -75,11 +74,16 @@ public partial class TicTacToe : MonoBehaviour
     /// Grid 数组
     /// </summary>
     private static Grid[,] _grids;
+    
+    /// <summary>
+    /// Pawn 数组
+    /// </summary>
+    private static PawnType[,] _boardData;
 
     /// <summary>
     /// 完成列表
     /// </summary>
-    private static List<Grid> _completedGrids = new List<Grid>();
+    private static List<Grid> _completedGrids = new();
 
     /// <summary>
     /// 初始化棋盘
@@ -92,24 +96,24 @@ public partial class TicTacToe : MonoBehaviour
         _boardData = new PawnType[boardSize, boardSize];
         _grids = new Grid[boardSize, boardSize];
         _completedGrids = new List<Grid>();
-
-        _currentStep = 0;
+        
         IsPlayerTurn = true;
+        LastPlacedGrid = null;
 
         for (int y = 0; y < boardSize; y++)
         {
             for (int x = 0; x < boardSize; x++)
             {
-                Grid item = Instantiate(gridPrefab, chessboard).GetComponent<Grid>();
-                item.Init(new Vector2Int(x, y), GridType.Empty);
+                Grid grid = Instantiate(gridPrefab, chessboard).GetComponent<Grid>();
+                grid.Init(new Vector2Int(x, y), GridType.Empty);
                 
-                _grids[x, y] = item;
+                _grids[x, y] = grid;
                 
                 float timer = 0;
                 DOTween.To(() => timer, a => timer = a, 1f, 
                     GameConstant.GridInitShowInterval * (x + boardSize * y)).OnComplete(() =>
                 {
-                    item.ShowGrid();
+                    grid.ShowGrid();
                 });
             }
         }
@@ -140,13 +144,7 @@ public partial class TicTacToe : MonoBehaviour
     public void AIMove()
     {
         if (_isGameOver) return;
-        
-        /* Weights */
-        CalculateWeights();
-        GetHighestWeightsGrid().TrySetComputePawn();
-        
-        /* Minimax */
-        // GetBestGrid().TrySetComputePawn();
+        GetBestMove(PawnType.ComputePawn).TrySetComputePawn();
     }
 
     //////////////////////////////////////////////////////////
@@ -223,15 +221,9 @@ public partial class TicTacToe : MonoBehaviour
     private void Update()
     {
 #if UNITY_EDITOR
-        if (Input.GetKeyUp(KeyCode.F))
-        {
-            CalculateWeights();
-        }
-
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            CalculateWeights();
-            GetHighestWeightsGrid().TrySetComputePawn();
+            GetBestMove(PawnType.ComputePawn).TrySetComputePawn();
         }
 
         if (Input.GetKeyUp(KeyCode.R))

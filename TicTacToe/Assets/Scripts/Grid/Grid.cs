@@ -13,9 +13,6 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private Transform imageX;
 
-    /* Debug Text */
-    public Text debugTextConnectedCount;
-
     /// <summary>
     /// 初始化
     /// </summary>
@@ -39,7 +36,6 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         GetComponent<Image>().color = GameConstant.GridColor;
         imageO.gameObject.SetActive(false);
         imageX.gameObject.SetActive(false);
-        debugTextConnectedCount.gameObject.SetActive(false);
         transform.localScale = Vector3.zero;
         GridData = null;
     }
@@ -102,8 +98,6 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         GridData.PawnType = PawnType.PlayerPawn;
 
         TicTacToe.Instance.LastPlacedGrid = this;
-        TicTacToe.Instance.CheckWinnerForInput(GridData.Coordinate, GridData.PawnType);
-        TicTacToe.Instance.OnPawnPlaced.Invoke();
 
         float timer = 0;
         DOTween.To(() => timer, a => timer = a, 1f, 0.7f).OnComplete(() =>
@@ -139,8 +133,6 @@ public class Grid : MonoBehaviour, IPointerClickHandler
         GridData.PawnType = PawnType.ComputePawn;
 
         TicTacToe.Instance.LastPlacedGrid = this;
-        TicTacToe.Instance.CheckWinnerForInput(GridData.Coordinate, GridData.PawnType);
-        TicTacToe.Instance.OnPawnPlaced.Invoke();
         return true;
     }
 

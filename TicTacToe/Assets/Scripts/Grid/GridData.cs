@@ -16,7 +16,7 @@ public enum GridType
 /// </summary>
 public enum PawnType
 {
-    Unknown = 0,
+    None = 0,
     PlayerPawn,
     ComputePawn
 }
@@ -28,7 +28,7 @@ public class GridData
 {
     private Vector2Int _coordinate = Vector2Int.zero;
     private GridType _gridType = GridType.Unknown;
-    private PawnType _pawnType = PawnType.Unknown;
+    private PawnType _pawnType = PawnType.None;
     private int _weight = 0;
     private int _connectedCount = 0;
     private int _maxSameTypeCountInPipeline = 0;
