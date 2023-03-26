@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,15 +50,15 @@ public class UIGameMain : MonoBehaviour
 
     private void OnGameStartEventHandler()
     {
-        startTipsText.gameObject.SetActive(true);
+        Invoke(nameof(ShowStartTipText), 0.5f);
         
         var layoutGroup = transform.Find("Panel_Chessboard").GetComponent<GridLayoutGroup>();
-        if (TicTacToe.Instance.boardSize == 3)
+        if (TicTacToe.BoardSize == 3)
         {
             layoutGroup.cellSize = Vector2.one * GameConstant.GridCellSize3X3;
             layoutGroup.spacing = Vector2.one * GameConstant.GridCellSpacing3X3;
         }
-        if (TicTacToe.Instance.boardSize == 4)
+        if (TicTacToe.BoardSize == 4)
         {
             layoutGroup.cellSize = Vector2.one * GameConstant.GridCellSize4X4;
             layoutGroup.spacing = Vector2.one * GameConstant.GridCellSpacing4X4;
@@ -89,13 +90,22 @@ public class UIGameMain : MonoBehaviour
     {
         
     }
+
+    private void ShowStartTipText()
+    {
+        startTipsText.gameObject.SetActive(true);
+    }
     
     private void QuitGame()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        transform.parent.Find("UI_Quit").gameObject.SetActive(true);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            QuitGame();
+        }
     }
 }

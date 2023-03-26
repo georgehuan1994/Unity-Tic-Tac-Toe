@@ -10,14 +10,14 @@ public partial class TicTacToe
     /// </summary>
     /// <param name="pawnType"></param>
     /// <returns></returns>
-    private Grid GetBestMove(PawnType pawnType)
+    private static Grid GetBestMove(PawnType pawnType)
     {
         var bestScore = int.MinValue;
         var bestMove = Vector2Int.zero;
 
-        for (int y = 0; y < boardSize; y++)
+        for (int y = 0; y < BoardSize; y++)
         {
-            for (int x = 0; x < boardSize; x++)
+            for (int x = 0; x < BoardSize; x++)
             {
                 if (_boardData[x, y] == PawnType.None)
                 {
@@ -37,45 +37,45 @@ public partial class TicTacToe
         return _grids[bestMove.x, bestMove.y];
     }
 
-    private static volatile int _shareBestScore;
-    
     /// <summary>
     /// 并行获取
     /// </summary>
     /// <param name="pawnType"></param>
     /// <returns></returns>
-    private Grid GetBestMoveParallel(PawnType pawnType)
+    private static Grid GetBestMoveParallel(PawnType pawnType)
     {
-        _shareBestScore = 0;
+        Object locker = new Object();
+        long bestScore = int.MinValue;
         var bestMove = Vector2Int.zero;
+        var boardData = _boardData;
         
         Debug.Log("-----------------");
 
-        var n = boardSize;
+        var n = BoardSize;
 
         Parallel.For(0, n*n, i =>
         {
             int x = i % n;
             int y = i / n;
-
-            if (_boardData[x, y] == PawnType.None)
+            
+            if (boardData[x, y] == PawnType.None)
             {
-                PawnType[,] boardData = _boardData;
                 boardData[x, y] = pawnType;
                 var score = Minimax(boardData, new Vector2Int(x, y), pawnType, 0, pawnType == PawnType.PlayerPawn);
                 boardData[x, y] = PawnType.None;
-                
-                if (score > _shareBestScore)
+
+                lock (locker)
                 {
-                    Debug.Log($"bestScore: {score} > {_shareBestScore}, coord: {x},{y}");
-                    _shareBestScore = score;
-                    bestMove = new Vector2Int(x, y);
+                    if (score > bestScore)
+                    {
+                        Debug.Log($"bestScore: {score} > {bestScore}, Coord: ({x},{y})");
+                        bestScore = score;
+                        bestMove = new Vector2Int(x, y);
+                    }
                 }
             }
         });
-        
-        Debug.LogWarning($"bestScore: {_shareBestScore}");
-        
+
         return _grids[bestMove.x, bestMove.y];
     }
 
@@ -90,7 +90,7 @@ public partial class TicTacToe
     /// <param name="alpha"></param>
     /// <param name="beta"></param>
     /// <returns></returns>
-    private int Minimax(PawnType[,] boardData, Vector2Int coord, PawnType pawnType, int depth, bool isMaximizingNext, int alpha = int.MinValue, int beta = int.MaxValue)
+    private static int Minimax(PawnType[,] boardData, Vector2Int coord, PawnType pawnType, int depth, bool isMaximizingNext, int alpha = int.MinValue, int beta = int.MaxValue)
     {
         var result = WinnerCheck(boardData, coord, pawnType);
         if (result != (int)GameResult.Continue)
@@ -102,9 +102,9 @@ public partial class TicTacToe
         {
             var bestScore = int.MinValue;
 
-            for (int y = 0; y < boardSize; y++)
+            for (int y = 0; y < BoardSize; y++)
             {
-                for (int x = 0; x < boardSize; x++)
+                for (int x = 0; x < BoardSize; x++)
                 {
                     if (boardData[x, y] == PawnType.None)
                     {
@@ -127,9 +127,9 @@ public partial class TicTacToe
         {
             var bestScore = int.MaxValue;
 
-            for (int y = 0; y < boardSize; y++)
+            for (int y = 0; y < BoardSize; y++)
             {
-                for (int x = 0; x < boardSize; x++)
+                for (int x = 0; x < BoardSize; x++)
                 {
                     if (boardData[x, y] == PawnType.None)
                     {

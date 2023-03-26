@@ -53,17 +53,17 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
         }
         GetComponent<CanvasGroup>().alpha = 0;
         gameObject.SetActive(true);
-        GetComponent<CanvasGroup>().DOFade(1, 0.5f).SetDelay(1f);
+        GetComponent<CanvasGroup>().DOFade(1, GameConstant.UIFadeDuration).SetDelay(1f);
     }
 
     public void Hide()
     {
         GetComponent<CanvasGroup>().alpha = 1;
-        GetComponent<CanvasGroup>().DOFade(0, 0.5f).OnComplete(() =>
+        GetComponent<CanvasGroup>().DOFade(0, 0.8f).OnComplete(() =>
         {
             gameObject.SetActive(false);
             TicTacToe.Instance.InitChessboard();
-        });
+        }).SetEase(Ease.OutCubic);
     }
 
     public void OnPointerClick(PointerEventData eventData)

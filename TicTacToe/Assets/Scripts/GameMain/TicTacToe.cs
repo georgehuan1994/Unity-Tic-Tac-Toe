@@ -12,10 +12,11 @@ public partial class TicTacToe : MonoBehaviour
     
     [SerializeField]
     private GameObject gridPrefab;
-    
-    [Range(3, 4)]
-    [SerializeField]
-    public int boardSize = 3;
+
+    /// <summary>
+    /// 棋盘尺寸
+    /// </summary>
+    public static readonly int BoardSize = 3;
 
     /// <summary>
     /// 对局开始时
@@ -98,16 +99,16 @@ public partial class TicTacToe : MonoBehaviour
         ClearChessboard();
 
         _isGameOver = false;
-        _boardData = new PawnType[boardSize, boardSize];
-        _grids = new Grid[boardSize, boardSize];
+        _boardData = new PawnType[BoardSize, BoardSize];
+        _grids = new Grid[BoardSize, BoardSize];
         _completedGrids = new List<Grid>();
         
         IsPlayerTurn = true;
         LastPlacedGrid = null;
 
-        for (int y = 0; y < boardSize; y++)
+        for (int y = 0; y < BoardSize; y++)
         {
-            for (int x = 0; x < boardSize; x++)
+            for (int x = 0; x < BoardSize; x++)
             {
                 Grid grid = Instantiate(gridPrefab, chessboard).GetComponent<Grid>();
                 grid.Init(new Vector2Int(x, y), GridType.Empty);
@@ -116,7 +117,7 @@ public partial class TicTacToe : MonoBehaviour
                 
                 float timer = 0;
                 DOTween.To(() => timer, a => timer = a, 1f, 
-                    GameConstant.GridInitShowInterval * (x + boardSize * y)).OnComplete(() =>
+                    GameConstant.GridInitShowInterval * (x + BoardSize * y)).OnComplete(() =>
                 {
                     grid.ShowGrid();
                 });
@@ -132,8 +133,8 @@ public partial class TicTacToe : MonoBehaviour
     /// </summary>
     private void ClearChessboard()
     {
-        _boardData = new PawnType[boardSize, boardSize];
-        _grids = new Grid[boardSize, boardSize];
+        _boardData = new PawnType[BoardSize, BoardSize];
+        _grids = new Grid[BoardSize, BoardSize];
 
         foreach (Transform child in chessboard)
         {
@@ -150,6 +151,9 @@ public partial class TicTacToe : MonoBehaviour
     {
         if (_isGameOver) return;
         GetBestMove(PawnType.ComputePawn).TrySetComputePawn();
+        
+        // TODO: 并行搜索
+        // GetBestMoveParallel(PawnType.ComputePawn).TrySetComputePawn();
     }
 
     //////////////////////////////////////////////////////////
@@ -172,7 +176,7 @@ public partial class TicTacToe : MonoBehaviour
         _isGameOver = true;
 
         _completedGrids = new List<Grid>();
-        for (int i = 0; i < boardSize; i++)
+        for (int i = 0; i < BoardSize; i++)
         {
             if (completedLayout == CompletedLayout.Full)
             {
@@ -189,7 +193,7 @@ public partial class TicTacToe : MonoBehaviour
                     _completedGrids.Add(_grids[i, i]);
                     break;
                 case CompletedLayout.InvDiagonal:
-                    _completedGrids.Add(_grids[i, boardSize - i - 1]);
+                    _completedGrids.Add(_grids[i, BoardSize - i - 1]);
                     break;
                 case CompletedLayout.Row:
                     _completedGrids.Add(_grids[LastPlacedGrid.GridData.Coordinate.x, i]);
@@ -220,7 +224,7 @@ public partial class TicTacToe : MonoBehaviour
 
     private void Start()
     {
-        Invoke("InitChessboard", 1);
+        Invoke(nameof(InitChessboard), 1);
     }
 
     private void Update()
