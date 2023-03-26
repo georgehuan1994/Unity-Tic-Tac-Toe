@@ -44,6 +44,7 @@ public class UIGameMain : MonoBehaviour
     private void OnPawnPlacedEventHandler()
     {
         startTipsText.gameObject.SetActive(false);
+        GetComponent<AudioSource>().Play();
     }
 
     private void OnGameStartEventHandler()
