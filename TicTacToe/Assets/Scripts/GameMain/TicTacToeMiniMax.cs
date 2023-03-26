@@ -1,6 +1,4 @@
-using System.Threading;
 using System.Threading.Tasks;
-using Unity.Collections;
 using UnityEngine;
 
 public partial class TicTacToe
@@ -78,6 +76,8 @@ public partial class TicTacToe
 
         return _grids[bestMove.x, bestMove.y];
     }
+    
+    private static uint _maxDepth;
 
     /// <summary>
     /// Minimax
@@ -97,7 +97,7 @@ public partial class TicTacToe
         {
             return result;
         }
-        
+
         if (isMaximizingNext) // AI
         {
             var bestScore = int.MinValue;
@@ -112,6 +112,11 @@ public partial class TicTacToe
                         var score = Minimax(boardData, new Vector2Int(x, y), PawnType.ComputePawn, depth + 1, false, alpha, beta);
                         boardData[x, y] = PawnType.None;
                         bestScore = Mathf.Max(score, bestScore);
+                        
+                        if (depth >= _maxDepth)
+                        {
+                            return 11;
+                        }
                         
                         alpha = Mathf.Max(alpha, score);
                         if (beta <= alpha)

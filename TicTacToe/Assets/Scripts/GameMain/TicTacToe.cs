@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -77,6 +78,32 @@ public partial class TicTacToe : MonoBehaviour
     private static Grid _lastPlacedGrid;
 
     /// <summary>
+    /// 游戏难度
+    /// </summary>
+    public GameDifficulty GameDifficulty
+    {
+        get => _gameDifficulty;
+        set
+        {
+            _gameDifficulty = value;
+            switch (value)
+            {
+                case GameDifficulty.Easy:
+                    _maxDepth = 2;
+                    break;
+                case GameDifficulty.Mid:
+                    _maxDepth = 3;
+                    break;
+                case GameDifficulty.Hard:
+                    _maxDepth = 8;
+                    break;
+            }
+        }
+    }
+
+    private GameDifficulty _gameDifficulty;
+
+    /// <summary>
     /// Grid 数组
     /// </summary>
     private static Grid[,] _grids;
@@ -143,7 +170,7 @@ public partial class TicTacToe : MonoBehaviour
     }
 
     //////////////////////////////////////////////////////////
-
+    
     /// <summary>
     /// AI 操作
     /// </summary>
@@ -208,6 +235,12 @@ public partial class TicTacToe : MonoBehaviour
         {
             grid.CompletedHighlight();
         }
+        
+        if (gameResult == GameResult.PlayerWin)
+        {
+            int next = (int)GameDifficulty + 1;
+            GameDifficulty = next > (int)GameDifficulty.Hard ? GameDifficulty.Hard : (GameDifficulty)next;
+        }
 
         OnGameOver.Invoke(gameResult);
         Debug.Log($"WINNER IS: {gameResult}");
@@ -220,6 +253,8 @@ public partial class TicTacToe : MonoBehaviour
     {
         _instance = this;
         DontDestroyOnLoad(_instance.gameObject);
+
+        GameDifficulty = GameDifficulty.Easy;
     }
 
     private void Update()

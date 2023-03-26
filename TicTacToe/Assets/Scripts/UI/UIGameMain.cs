@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,9 @@ public class UIGameMain : MonoBehaviour
     [SerializeField] 
     private Button closeButton;
 
+    [SerializeField]
+    private Text difficultyText;
+    
     private void Start()
     {
         TicTacToe.Instance.OnGameStart += OnGameStartEventHandler;
@@ -49,6 +53,7 @@ public class UIGameMain : MonoBehaviour
 
     private void OnGameStartEventHandler()
     {
+        Invoke(nameof(AddDifficulty), 0.5f);
         Invoke(nameof(ShowStartTipText), 0.6f);
         
         var layoutGroup = transform.Find("Panel_Chessboard").GetComponent<GridLayoutGroup>();
@@ -107,7 +112,34 @@ public class UIGameMain : MonoBehaviour
             });
         }
     }
-    
+
+    private void AddDifficulty()
+    {
+        var diffGroup = transform.Find("DiffGroup");
+        var easy = diffGroup.GetChild(1).GetChild(1);
+        var mid = diffGroup.GetChild(2).GetChild(1);
+        var hard = diffGroup.GetChild(3).GetChild(1);
+        
+        switch (TicTacToe.Instance.GameDifficulty)
+        {
+            case GameDifficulty.Easy:
+                difficultyText.text = "EASY";
+                easy.gameObject.SetActive(true);
+                break;
+            case GameDifficulty.Mid:
+                difficultyText.text = "MID";
+                easy.gameObject.SetActive(true);
+                mid.gameObject.SetActive(true);
+                break;
+            case GameDifficulty.Hard:
+                difficultyText.text = "HARD";
+                easy.gameObject.SetActive(true);
+                mid.gameObject.SetActive(true);
+                hard.gameObject.SetActive(true);
+                break;
+        }
+    }
+
     private void QuitGame()
     {
         transform.parent.Find("UI_Quit").gameObject.SetActive(true);
