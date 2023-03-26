@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -44,14 +43,14 @@ public partial class TicTacToe : MonoBehaviour
     public GameOverDelegate OnGameOver;
 
     /// <summary>
-    /// 是否为玩家回合
-    /// </summary>
-    public bool IsPlayerTurn { get; set; }
-
-    /// <summary>
     /// 游戏结束标识
     /// </summary>
     private bool _isGameOver;
+    
+    /// <summary>
+    /// 是否为玩家回合
+    /// </summary>
+    public static bool IsPlayerTurn;
 
     /// <summary>
     /// 最后一个被放置的 Grid
@@ -80,28 +79,7 @@ public partial class TicTacToe : MonoBehaviour
     /// <summary>
     /// 游戏难度
     /// </summary>
-    public GameDifficulty GameDifficulty
-    {
-        get => _gameDifficulty;
-        set
-        {
-            _gameDifficulty = value;
-            switch (value)
-            {
-                case GameDifficulty.Easy:
-                    _maxDepth = 2;
-                    break;
-                case GameDifficulty.Mid:
-                    _maxDepth = 3;
-                    break;
-                case GameDifficulty.Hard:
-                    _maxDepth = 8;
-                    break;
-            }
-        }
-    }
-
-    private GameDifficulty _gameDifficulty;
+    public static GameDifficulty GameDifficulty;
 
     /// <summary>
     /// Grid 数组

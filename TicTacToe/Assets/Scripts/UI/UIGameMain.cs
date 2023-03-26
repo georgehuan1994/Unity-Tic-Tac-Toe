@@ -115,12 +115,14 @@ public class UIGameMain : MonoBehaviour
 
     private void AddDifficulty()
     {
+        Debug.Log($"Difficulty: {TicTacToe.GameDifficulty}");
+        
         var diffGroup = transform.Find("DiffGroup");
         var easy = diffGroup.GetChild(1).GetChild(1);
         var mid = diffGroup.GetChild(2).GetChild(1);
         var hard = diffGroup.GetChild(3).GetChild(1);
         
-        switch (TicTacToe.Instance.GameDifficulty)
+        switch (TicTacToe.GameDifficulty)
         {
             case GameDifficulty.Easy:
                 difficultyText.text = "EASY";

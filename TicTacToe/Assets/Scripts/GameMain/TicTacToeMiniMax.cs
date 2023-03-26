@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 public partial class TicTacToe
 {
@@ -12,6 +16,7 @@ public partial class TicTacToe
     {
         var bestScore = int.MinValue;
         var bestMove = Vector2Int.zero;
+        var scoreList = new int[BoardSize * BoardSize];
 
         for (int y = 0; y < BoardSize; y++)
         {
@@ -22,7 +27,9 @@ public partial class TicTacToe
                     _boardData[x, y] = pawnType;
                     var score = Minimax(_boardData, new Vector2Int(x, y), pawnType, 0, pawnType == PawnType.PlayerPawn);
                     _boardData[x, y] = PawnType.None;
-        
+
+                    score = ScoreWeak(score);
+                    
                     if (score > bestScore)
                     {
                         bestScore = score;
@@ -76,8 +83,6 @@ public partial class TicTacToe
 
         return _grids[bestMove.x, bestMove.y];
     }
-    
-    private static uint _maxDepth;
 
     /// <summary>
     /// Minimax
@@ -112,12 +117,7 @@ public partial class TicTacToe
                         var score = Minimax(boardData, new Vector2Int(x, y), PawnType.ComputePawn, depth + 1, false, alpha, beta);
                         boardData[x, y] = PawnType.None;
                         bestScore = Mathf.Max(score, bestScore);
-                        
-                        if (depth >= _maxDepth)
-                        {
-                            return 11;
-                        }
-                        
+
                         alpha = Mathf.Max(alpha, score);
                         if (beta <= alpha)
                         {
@@ -153,5 +153,22 @@ public partial class TicTacToe
             }
             return bestScore;
         }
+    }
+
+    private static int ScoreWeak(int inScore)
+    {
+        var outScore = inScore;
+
+        switch (GameDifficulty)
+        {
+            case GameDifficulty.Easy:
+                if (inScore >= 0) { outScore = Random.value < 0.35f ? (int)GameResult.PlayerWin - 1 : 0; }
+                break;
+            case GameDifficulty.Mid:
+                if (inScore >= 0) { outScore = Random.value < 0.25f ? (int)GameResult.PlayerWin - 1 : 0; }
+                break;
+        }
+
+        return outScore;
     }
 }

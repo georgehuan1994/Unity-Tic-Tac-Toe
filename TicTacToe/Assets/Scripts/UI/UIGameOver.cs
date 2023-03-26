@@ -51,6 +51,7 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
         GetComponent<CanvasGroup>().alpha = 0;
         gameObject.SetActive(true);
         GetComponent<CanvasGroup>().DOFade(1, GameConstant.UIFadeDuration).SetDelay(1f);
+        GetComponent<Image>().raycastTarget = true;
         
         restartTipText.GetComponent<Animation>().Stop();
         restartTipText.color = Color.white;
@@ -58,6 +59,7 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
 
     public void Hide()
     {
+        GetComponent<Image>().raycastTarget = false;
         GetComponent<CanvasGroup>().alpha = 1;
         GetComponent<CanvasGroup>().DOFade(0, 0.8f).OnComplete(() =>
         {

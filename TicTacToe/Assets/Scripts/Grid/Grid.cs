@@ -79,7 +79,7 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     /// <returns></returns>
     public bool TrySetPlayerPawn()
     {
-        if (!TicTacToe.Instance.IsPlayerTurn)
+        if (!TicTacToe.IsPlayerTurn)
         {
             return false;
         }
@@ -114,7 +114,7 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     /// <returns></returns>
     public bool TrySetComputePawn()
     {
-        if (TicTacToe.Instance.IsPlayerTurn)
+        if (TicTacToe.IsPlayerTurn)
         {
             return false;
         }
