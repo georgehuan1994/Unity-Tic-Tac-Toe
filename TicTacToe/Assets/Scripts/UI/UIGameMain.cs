@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,13 +43,13 @@ public class UIGameMain : MonoBehaviour
 
     private void OnPawnPlacedEventHandler()
     {
-        startTipsText.gameObject.SetActive(false);
+        HideStartTipText();
         GetComponent<AudioSource>().Play();
     }
 
     private void OnGameStartEventHandler()
     {
-        Invoke(nameof(ShowStartTipText), 0.5f);
+        Invoke(nameof(ShowStartTipText), 0.6f);
         
         var layoutGroup = transform.Find("Panel_Chessboard").GetComponent<GridLayoutGroup>();
         if (TicTacToe.BoardSize == 3)
@@ -93,7 +92,20 @@ public class UIGameMain : MonoBehaviour
 
     private void ShowStartTipText()
     {
+        startTipsText.color = new Color(1, 1, 1, 0);
         startTipsText.gameObject.SetActive(true);
+        startTipsText.DOFade(1, 0.2f);
+    }
+
+    private void HideStartTipText()
+    {
+        if (startTipsText.gameObject.activeInHierarchy)
+        {
+            startTipsText.DOFade(0, 0.2f).OnComplete(() =>
+            {
+                startTipsText.gameObject.SetActive(false);
+            });
+        }
     }
     
     private void QuitGame()

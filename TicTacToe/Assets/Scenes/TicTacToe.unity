@@ -592,6 +592,7 @@ GameObject:
   - component: {fileID: 478087539}
   - component: {fileID: 478087541}
   - component: {fileID: 478087540}
+  - component: {fileID: 478087542}
   m_Layer: 5
   m_Name: Text_ReStartTips
   m_TagString: Untagged
@@ -649,10 +650,10 @@ MonoBehaviour:
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Tap screen to restart
+  m_Text: Tap screen start game
 --- !u!222 &478087541
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -661,6 +662,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 478087538}
   m_CullTransparentMesh: 1
+--- !u!111 &478087542
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478087538}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 46881ad9908a14b8c83e141a9ece6d60, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 46881ad9908a14b8c83e141a9ece6d60, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1 &509447399
 GameObject:
   m_ObjectHideFlags: 0
@@ -1552,6 +1569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resultText: {fileID: 544606617}
+  restartTipText: {fileID: 478087540}
   playerPawn: {fileID: 1822446074}
   computePawn: {fileID: 1043083111}
 --- !u!1 &1191216223
@@ -2433,7 +2451,6 @@ GameObject:
   - component: {fileID: 1919015750}
   - component: {fileID: 1919015752}
   - component: {fileID: 1919015751}
-  - component: {fileID: 1919015753}
   m_Layer: 5
   m_Name: Text_StartTips
   m_TagString: Untagged
@@ -2503,22 +2520,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1919015749}
   m_CullTransparentMesh: 1
---- !u!111 &1919015753
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1919015749}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 46881ad9908a14b8c83e141a9ece6d60, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: 46881ad9908a14b8c83e141a9ece6d60, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
 --- !u!1 &1927523282
 GameObject:
   m_ObjectHideFlags: 0

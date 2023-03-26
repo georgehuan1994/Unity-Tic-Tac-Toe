@@ -222,11 +222,6 @@ public partial class TicTacToe : MonoBehaviour
         DontDestroyOnLoad(_instance.gameObject);
     }
 
-    private void Start()
-    {
-        Invoke(nameof(InitChessboard), 1);
-    }
-
     private void Update()
     {
 #if UNITY_EDITOR

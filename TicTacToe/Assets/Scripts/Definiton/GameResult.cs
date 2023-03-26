@@ -4,8 +4,8 @@
 public enum GameResult
 {
     Tie = 0,
-    PlayerWin = -1,
-    ComputeWin = 1,
+    PlayerWin = -10,
+    ComputeWin = 10,
     Continue = 999,
 }
 

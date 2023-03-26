@@ -8,6 +8,9 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField]
     private Text resultText;
+
+    [SerializeField] 
+    private Text restartTipText;
     
     [SerializeField]
     private Image playerPawn;
@@ -15,15 +18,9 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private Image computePawn;
 
-    private void Awake()
-    {
-        GetComponent<CanvasGroup>().alpha = 0;
-    }
-
     private void Start()
     {
         TicTacToe.Instance.OnGameOver += Show;
-        gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -54,6 +51,9 @@ public class UIGameOver : MonoBehaviour, IPointerClickHandler
         GetComponent<CanvasGroup>().alpha = 0;
         gameObject.SetActive(true);
         GetComponent<CanvasGroup>().DOFade(1, GameConstant.UIFadeDuration).SetDelay(1f);
+        
+        restartTipText.GetComponent<Animation>().Stop();
+        restartTipText.color = Color.white;
     }
 
     public void Hide()
