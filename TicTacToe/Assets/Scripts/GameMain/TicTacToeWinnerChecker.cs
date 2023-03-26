@@ -5,37 +5,38 @@ public partial class TicTacToe
     /// <summary>
     /// 对局结束检查
     /// </summary>
-    private void GameOverCheck(Vector2Int coord, PawnType pawnType)
+    private void GameOverCheck(PawnType[,] boardData, Vector2Int coord, PawnType pawnType)
     {
         _boardData[coord.x, coord.y] = pawnType;
-        GameOver(CheckDiagonal(coord, pawnType), CompletedLayout.Diagonal);
-        GameOver(CheckInvDiagonal(coord, pawnType), CompletedLayout.InvDiagonal);
-        GameOver(CheckRow(coord, pawnType), CompletedLayout.Row);
-        GameOver(CheckColumn(coord, pawnType), CompletedLayout.Column);
-        GameOver(CheckTie(), CompletedLayout.Full);
+        GameOver(CheckDiagonal(boardData, coord, pawnType), CompletedLayout.Diagonal);
+        GameOver(CheckInvDiagonal(boardData, coord, pawnType), CompletedLayout.InvDiagonal);
+        GameOver(CheckRow(boardData, coord, pawnType), CompletedLayout.Row);
+        GameOver(CheckColumn(boardData, coord, pawnType), CompletedLayout.Column);
+        GameOver(CheckTie(boardData), CompletedLayout.Full);
     }
 
     /// <summary>
     /// 胜平负检查
     /// </summary>
-    /// <param name="coord"></param>
-    /// <param name="pawnType"></param>
+    /// <param name="boardDataCop">棋子数据拷贝</param>
+    /// <param name="coord">棋子坐标</param>
+    /// <param name="pawnType">棋子类型</param>
     /// <returns></returns>
-    private int WinnerCheck(Vector2Int coord, PawnType pawnType)
+    private int WinnerCheck(PawnType[,] boardDataCop, Vector2Int coord, PawnType pawnType)
     {
-        var result = CheckDiagonal(coord, pawnType);
+        var result = CheckDiagonal(boardDataCop, coord, pawnType);
         if (result != GameResult.Continue) return (int)result;
 
-        result = CheckInvDiagonal(coord, pawnType);
+        result = CheckInvDiagonal(boardDataCop, coord, pawnType);
         if (result != GameResult.Continue) return (int)result;
 
-        result = CheckRow(coord, pawnType);
+        result = CheckRow(boardDataCop, coord, pawnType);
         if (result != GameResult.Continue) return (int)result;
 
-        result = CheckColumn(coord, pawnType);
+        result = CheckColumn(boardDataCop, coord, pawnType);
         if (result != GameResult.Continue) return (int)result;
         
-        return (int)CheckTie();
+        return (int)CheckTie(boardDataCop);
     }
     
     //////////////////////////////////////////////////////////
@@ -43,13 +44,13 @@ public partial class TicTacToe
     /// <summary>
     /// 检查对角线
     /// </summary>
-    private GameResult CheckDiagonal(Vector2Int coord, PawnType pawnType)
+    private GameResult CheckDiagonal(PawnType[,] boardData, Vector2Int coord, PawnType pawnType)
     {
         if (coord.x == coord.y)
         {
             for (int i = 0; i < boardSize; i++)
             {
-                if (pawnType != _boardData[i, i]) return GameResult.Continue;
+                if (pawnType != boardData[i, i]) return GameResult.Continue;
             }
 
             return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -61,13 +62,13 @@ public partial class TicTacToe
     /// <summary>
     /// 检查逆对角线
     /// </summary>
-    private GameResult CheckInvDiagonal(Vector2Int coord, PawnType pawnType)
+    private GameResult CheckInvDiagonal(PawnType[,] boardData, Vector2Int coord, PawnType pawnType)
     {
         if (coord.x + coord.y == boardSize - 1)
         {
             for (int i = 0; i < boardSize; i++)
             {
-                if (pawnType != _boardData[i, boardSize - i - 1]) return GameResult.Continue;
+                if (pawnType != boardData[i, boardSize - i - 1]) return GameResult.Continue;
             }
             
             return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -79,11 +80,11 @@ public partial class TicTacToe
     /// <summary>
     /// 检查当前列
     /// </summary>
-    private GameResult CheckRow(Vector2Int coord, PawnType pawnType)
+    private GameResult CheckRow(PawnType[,] boardData, Vector2Int coord, PawnType pawnType)
     {
         for (int i = 0; i < boardSize; i++)
         {
-            if (pawnType != _boardData[coord.x, i]) return GameResult.Continue;
+            if (pawnType != boardData[coord.x, i]) return GameResult.Continue;
         }
 
         return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -92,11 +93,11 @@ public partial class TicTacToe
     /// <summary>
     /// 检查当前行
     /// </summary>
-    private GameResult CheckColumn(Vector2Int coord, PawnType pawnType)
+    private GameResult CheckColumn(PawnType[,] boardData, Vector2Int coord, PawnType pawnType)
     {
         for (int i = 0; i < boardSize; i++)
         {
-            if (pawnType != _boardData[i, coord.y]) return GameResult.Continue;
+            if (pawnType != boardData[i, coord.y]) return GameResult.Continue;
         }
 
         return pawnType == PawnType.PlayerPawn ? GameResult.PlayerWin : GameResult.ComputeWin;
@@ -105,9 +106,9 @@ public partial class TicTacToe
     /// <summary>
     /// 检查和棋
     /// </summary>
-    private GameResult CheckTie()
+    private GameResult CheckTie(PawnType[,] boardData)
     {
-        foreach (var pawnType in _boardData)
+        foreach (var pawnType in boardData)
         {
             if (pawnType == PawnType.None)
             {

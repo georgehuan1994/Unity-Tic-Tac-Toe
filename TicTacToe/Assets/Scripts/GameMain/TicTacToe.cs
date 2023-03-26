@@ -62,7 +62,7 @@ public partial class TicTacToe : MonoBehaviour
             _lastPlacedGrid = value;
             if (value != null)
             {
-                GameOverCheck(value.GridData.Coordinate, value.GridData.PawnType);
+                GameOverCheck(_boardData, value.GridData.Coordinate, value.GridData.PawnType);
                 OnPawnPlaced.Invoke();
                 if (!_isGameOver)
                 {
