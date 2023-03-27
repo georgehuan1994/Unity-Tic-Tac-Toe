@@ -16,11 +16,36 @@ There are three types: **easy**, **mid**, and **hard** of difficulty, increases 
 
 **Quit:** tap the `X` in the upper right corner of the screen or press `Esc`.
 
+## Script Content
+
+There are 4 folder in scripts content. 
+
 ![2023-03-27_114320](https://user-images.githubusercontent.com/49583943/227836372-cf563a71-5160-4021-b6d0-0303b07d0937.png)
 
+### Definition
+
+Some definitions of **enum** and **constant**.
+
+### GameMain
+
+TicTacToe: game procedure controller.
+
+TicTacToeMiniMax: a partial class of `TicTacToe`, include minimax search algorithm.
+
+TicTacToeWinnerChecker: a partial class of `TicTacToe`, include the functionality of board state check up.
+
+### Grid
+
+Object `Grid` and its data.
+
+### UI
+
+The view script for each user interface.
 
 ## TODO
 
-- [ ] Implement minimax parallel for more efficient computing on *N x N* board.
+- [ ] Implement minimax parallel for more efficient computing on *N x N* board
 - [ ] Find a better ways to weaken search algorithms.
+- [ ] Search in the coroutine.
 - [ ] Lock/Hide the grid on a larger board to create more interesting game.
+
