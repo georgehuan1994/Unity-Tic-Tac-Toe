@@ -1,2 +1,2 @@
-# Unity-Tic-Tac-Toe
-A Tic-Tac-Toe game in Unity
+# Unity TicTacToe
+A TicTacToe game made in Unity.
